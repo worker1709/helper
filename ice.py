@@ -36,103 +36,93 @@ keyboard_publish_cancel = ReplyKeyboardMarkup(resize_keyboard=True, one_time_key
 keyboard_cancel = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).add(button_cancel)
 
 
-try:
-    @dp.message_handler(commands='start', state=None)
-    async def start(message: types.Message):
-        await message.answer('Сәлеметсіз бе!?\n📌Бот арқылы арнаға өз тапсырмаңызды жүктей аласыз.', reply_markup=keyboard_Main)
-        await bot.send_message(history, text = f'@{message.from_user.username}')
-        
-    @dp.message_handler(Text(equals='Тапсырманы жүктеу 📥', ignore_case=True), state=None)
-    async def mains(message: types.Message):
-        await message.reply('Тапсыманың суреті бар ма???', reply_markup=inkeyboard_yes_no)
-        
-    @dp.message_handler(Text(equals='Ақпарат 📜', ignore_case=True), state=None)
-    async def info(message: types.Message):
-        await message.answer('Нұсқаулық (Тапсырманы жүктеу 📥 - батырмасы):\nТапсыманың суреті 🖼 - есеп, тест, бақылау немесе орындалуы керек тапсырманың суреті!\nСипаттама - Қысқаша түсіндірме(нестеу керек? қай тапсырма? қашанға дейін?)')
-
-
-    @dp.message_handler(state="*", commands='Бас тарту ↩️')
-    @dp.message_handler(Text(equals='Бас тарту ↩️', ignore_case=True), state="*")
-    async def cancel_handler(message: types.Message, state: FSMContext):
-        current_state = await state.get_state()
-        if current_state is None:
-            return
-        await state.finish()
-        await message.answer('Сіз тапсырма жүктеуден бас тартыңыз❗️❗️❗️', reply_markup=keyboard_Main, )
-
-
-    @dp.callback_query_handler(text='🖼 бар', state=None)
-    async def photo_yes(callback: types.CallbackQuery):
-        await FSMadmin.photo.set()
-        await callback.message.answer('Тапсыманың суреті 🖼:', reply_markup=keyboard_cancel)
-        time.sleep(0.5)
-        await callback.message.delete()
-
-    @dp.callback_query_handler(text='🖼 жоқ', state=None)
-    async def photo_no(callback: types.CallbackQuery):
-        await FSMadmin.text.set()
-        await callback.message.answer('Сипаттама 🖊:', reply_markup=keyboard_cancel)
-        time.sleep(0.5)
-        await callback.message.delete()
-        
-    # @dp.message_handler(Text(equals='🖼 бар', ignore_case=True), state=None)
-    # async def cancel_handler(message: types.Message):
-    #     await FSMadmin.photo.set()
-    #     await message.reply('Тапсыманың суреті 🖼:', reply_markup=keyboard_cancel)
-        
-    # @dp.message_handler(Text(equals='🖼 жоқ', ignore_case=True), state=None)
-    # async def cancel_handler(message: types.Message):
-    #     await FSMadmin.text.set()
-    #     await message.reply('Сипаттама 🖊:', reply_markup=keyboard_cancel)
-        
-
-    @dp.message_handler(content_types=['photo'], state=FSMadmin.photo)
-    async def send_photo(message: types.Message, state: FSMContext):
-        async with state.proxy() as data:
-            data['photo'] = message.photo[0].file_id
-            await bot.send_photo(history, data['photo'])
-        await FSMadmin.next()
-        print(1/0)
-        await message.reply('Сипаттама 🖊:', reply_markup=keyboard_cancel)
-        
-    @dp.message_handler(Text(equals='Жариялау 📤', ignore_case=True), state=FSMadmin)
-    async def load_photo(message: types.Message, state: FSMContext):
-        async with state.proxy() as data:
-            try:
-                await bot.send_photo(chat_id, data['photo'], f"Сипаттама: {data['text']}\nТелеграм: @{data['username']}")
-                await message.answer('Жарияланды!', reply_markup=keyboard_Main)
-            except:
-                await bot.send_message(chat_id, f"Сипаттама: {data['text']}\nТелеграм: @{data['username']}")
-                await message.answer('Жарияланды!', reply_markup=keyboard_Main)
-        await state.finish()
-        
-    @dp.message_handler(state=FSMadmin.text)
-    async def load_text(message: types.Message, state: FSMContext):
-        async with state.proxy() as data:
-            data['text'] = message.text
-            data['username'] = message.from_user.username
-            
-        async with state.proxy() as data:
-            try:
-                await bot.send_photo(message.from_user.id, data['photo'], f"Сипаттама: {data['text']}", reply_markup=keyboard_publish_cancel)
-                # await bot.send_photo(chat_id, data['photo'], f"Сипаттама: {data['text']}\nТелеграм: @{data['username']}")
-            except:
-                await bot.send_message(message.from_user.id, f"Сипаттама: {data['text']}", reply_markup=keyboard_publish_cancel)
-                # await bot.send_message(chat_id, f"Нет фото\nСипаттама: {data['text']}\nТелеграм: @{data['username']}")
-        # await state.finish()    
-        
-
-    def main():
-        executor.start_polling(dp)
-        
-    if __name__ == '__main__':
-        
-        main()
-except:
+@dp.message_handler(commands='start', state=None)
+async def start(message: types.Message):
+    await message.answer('Сәлеметсіз бе!?\n📌Бот арқылы арнаға өз тапсырмаңызды жүктей аласыз.', reply_markup=keyboard_Main)
+    await bot.send_message(history, text = f'@{message.from_user.username}')
     
-    async def mainmm():
-        await bot.send_message(my_id, text="HELP!!!")
+@dp.message_handler(Text(equals='Тапсырманы жүктеу 📥', ignore_case=True), state=None)
+async def mains(message: types.Message):
+    await message.reply('Тапсыманың суреті бар ма???', reply_markup=inkeyboard_yes_no)
     
-    if __name__ == '__main__':
+@dp.message_handler(Text(equals='Ақпарат 📜', ignore_case=True), state=None)
+async def info(message: types.Message):
+    await message.answer('Нұсқаулық (Тапсырманы жүктеу 📥 - батырмасы):\nТапсыманың суреті 🖼 - есеп, тест, бақылау немесе орындалуы керек тапсырманың суреті!\nСипаттама - Қысқаша түсіндірме(нестеу керек? қай тапсырма? қашанға дейін?)')
+
+
+@dp.message_handler(state="*", commands='Бас тарту ↩️')
+@dp.message_handler(Text(equals='Бас тарту ↩️', ignore_case=True), state="*")
+async def cancel_handler(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.finish()
+    await message.answer('Сіз тапсырма жүктеуден бас тартыңыз❗️❗️❗️', reply_markup=keyboard_Main, )
+
+
+@dp.callback_query_handler(text='🖼 бар', state=None)
+async def photo_yes(callback: types.CallbackQuery):
+    await FSMadmin.photo.set()
+    await callback.message.answer('Тапсыманың суреті 🖼:', reply_markup=keyboard_cancel)
+    time.sleep(0.5)
+    await callback.message.delete()
+
+@dp.callback_query_handler(text='🖼 жоқ', state=None)
+async def photo_no(callback: types.CallbackQuery):
+    await FSMadmin.text.set()
+    await callback.message.answer('Сипаттама 🖊:', reply_markup=keyboard_cancel)
+    time.sleep(0.5)
+    await callback.message.delete()
+    
+# @dp.message_handler(Text(equals='🖼 бар', ignore_case=True), state=None)
+# async def cancel_handler(message: types.Message):
+#     await FSMadmin.photo.set()
+#     await message.reply('Тапсыманың суреті 🖼:', reply_markup=keyboard_cancel)
+    
+# @dp.message_handler(Text(equals='🖼 жоқ', ignore_case=True), state=None)
+# async def cancel_handler(message: types.Message):
+#     await FSMadmin.text.set()
+#     await message.reply('Сипаттама 🖊:', reply_markup=keyboard_cancel)
+    
+
+@dp.message_handler(content_types=['photo'], state=FSMadmin.photo)
+async def wait_photo(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['photo'] = message.photo[0].file_id
+        await bot.send_photo(history, data['photo'])
+    await FSMadmin.next()
+    await message.reply('Сипаттама 🖊:', reply_markup=keyboard_cancel)
+    
+@dp.message_handler(Text(equals='Жариялау 📤', ignore_case=True), state=FSMadmin)
+async def load_photo(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        try:
+            await bot.send_photo(chat_id, data['photo'], f"Сипаттама: {data['text']}\nТелеграм: @{data['username']}")
+            await message.answer('Жарияланды!', reply_markup=keyboard_Main)
+        except:
+            await bot.send_message(chat_id, f"Сипаттама: {data['text']}\nТелеграм: @{data['username']}")
+            await message.answer('Жарияланды!', reply_markup=keyboard_Main)
+    await state.finish()
+    
+@dp.message_handler(state=FSMadmin.text)
+async def load_text(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['text'] = message.text
+        data['username'] = message.from_user.username
         
-        mainmm()
+    async with state.proxy() as data:
+        try:
+            await bot.send_photo(message.from_user.id, data['photo'], f"Сипаттама: {data['text']}", reply_markup=keyboard_publish_cancel)
+            # await bot.send_photo(chat_id, data['photo'], f"Сипаттама: {data['text']}\nТелеграм: @{data['username']}")
+        except:
+            await bot.send_message(message.from_user.id, f"Сипаттама: {data['text']}", reply_markup=keyboard_publish_cancel)
+            # await bot.send_message(chat_id, f"Нет фото\nСипаттама: {data['text']}\nТелеграм: @{data['username']}")
+    # await state.finish()    
+    
+
+def main():
+    executor.start_polling(dp, skip_updates=True)
+    
+if __name__ == '__main__':
+    
+    main()
