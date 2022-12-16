@@ -119,10 +119,5 @@ async def load_text(message: types.Message, state: FSMContext):
             # await bot.send_message(chat_id, f"Нет фото\nСипаттама: {data['text']}\nТелеграм: @{data['username']}")
     # await state.finish()    
     
+executor.start_polling(dp, skip_updates=True)
 
-def main():
-    executor.start_polling(dp, skip_updates=True)
-    
-if __name__ == '__main__':
-    
-    main()
